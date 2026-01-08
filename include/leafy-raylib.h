@@ -198,4 +198,21 @@ static inline void lf_draw_grid(int cell_size, Color c) {
   }
 }
 
+// ============================================================================
+// RANDOM HELPERS
+// ============================================================================
+
+static inline int lf_rand_int(int min, int max) {
+  return GetRandomValue(min, max);
+}
+
+static inline float lf_rand_float(float min, float max) {
+  return min + (float)GetRandomValue(0, 10000) / 10000.0f * (max - min);
+}
+
+// probability p (0.0 to 1.0)
+static inline bool lf_rand_chance(float p) {
+  return lf_rand_float(0.0f, 1.0f) < p;
+}
+
 #endif
