@@ -172,4 +172,30 @@ static inline void lf_camera_smooth_follow(Camera2D *cam, Vector2 target,
 static inline void lf_camera_begin(Camera2D cam) { BeginMode2D(cam); }
 static inline void lf_camera_end(void) { EndMode2D(); }
 
+// ============================================================================
+// DEBUG DRAWING
+// ============================================================================
+
+// Draw a rectangle outline for debugging hitboxes
+static inline void lf_draw_hitbox(Rectangle r, Color c) {
+  DrawRectangleLinesEx(r, 2.0f, c);
+}
+
+// Draw a point/dot for debugging positions
+static inline void lf_draw_point(Vector2 p, Color c) {
+  DrawCircleV(p, 4.0f, c);
+}
+
+// Draw a grid for debugging world space
+static inline void lf_draw_grid(int cell_size, Color c) {
+  int w = GetScreenWidth();
+  int h = GetScreenHeight();
+  for (int x = 0; x < w; x += cell_size) {
+    DrawLine(x, 0, x, h, c);
+  }
+  for (int y = 0; y < h; y += cell_size) {
+    DrawLine(0, y, w, y, c);
+  }
+}
+
 #endif
