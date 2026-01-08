@@ -95,4 +95,58 @@ static inline Rectangle lf_rect_expand(Rectangle rect, float amount) {
   rect.height += amount * 2;
   return rect;
 }
+
+// ============================================================================
+// INPUT
+// ============================================================================
+
+typedef struct {
+  int left;
+  int right;
+  int up;
+  int down;
+  int jump;
+  int action;
+} LF_Controls;
+
+static inline LF_Controls lf_default_control(void) {
+  return (LF_Controls){
+      .left = KEY_A,
+      .right = KEY_D,
+      .up = KEY_W,
+      .down = KEY_S,
+      .jump = KEY_SPACE,
+      .action = KEY_Z,
+  };
+}
+
+static inline bool lf_move_left(LF_Controls *c) {
+  return IsKeyDown(c->left) || IsKeyDown(KEY_LEFT);
+}
+static inline bool lf_move_right(LF_Controls *c) {
+  return IsKeyDown(c->right) || IsKeyDown(KEY_RIGHT);
+}
+static inline bool lf_move_up(LF_Controls *c) {
+  return IsKeyDown(c->up) || IsKeyDown(KEY_UP);
+}
+static inline bool lf_move_down(LF_Controls *c) {
+  return IsKeyDown(c->down) || IsKeyDown(KEY_DOWN);
+}
+static inline bool lf_jump(LF_Controls *c) { return IsKeyPressed(c->jump); }
+static inline bool lf_action(LF_Controls *c) { return IsKeyPressed(c->action); }
+
+// Get normalized movement vector (-1 to 1)
+static inline Vector2 lf_move_vector(LF_Controls *c) {
+  Vector2 v = {0.0f, 0.0f};
+  if (lf_move_left(c))
+    v.x -= 1.0f;
+  if (lf_move_right(c))
+    v.x += 1.0f;
+  if (lf_move_up(c))
+    v.y -= 1.0f;
+  if (lf_move_down(c))
+    v.y += 1.0f;
+  return Vector2Normalize(v);
+}
+
 #endif
