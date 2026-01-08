@@ -35,7 +35,7 @@ int main(void) {
 
     BeginDrawing();
     ClearBackground(BLACK);
-
+    lf_draw_grid(64, WHITE);
     DrawRectangleRec(player, player_color);
 
     // Debug helpers
