@@ -379,4 +379,57 @@ static inline void lf_tilemap_draw_tex(LF_Tilemap *map, Texture2D atlas,
   }
 }
 
+// ============================================================================
+// ANIMATION HELPERS
+// ============================================================================
+
+typedef struct {
+  Rectangle frame_rect;
+  int frame_count;
+  int current_frame;
+  float frame_time;
+  float timer;
+  bool looping;
+  bool finished;
+} LF_Animation;
+
+static inline LF_Animation lf_animation_create(int frames, int fps,
+                                               float frame_width,
+                                               float frame_height) {
+  LF_Animation anim = {0};
+  anim.frame_count = frames;
+  anim.frame_time = 1.0f / fps;
+  anim.frame_rect = (Rectangle){0, 0, frame_width, frame_height};
+  anim.looping = true;
+  return anim;
+}
+
+static inline void lf_animation_update(LF_Animation *anim, float dt) {
+  if (anim->finished && !anim->looping)
+    return;
+
+  anim->timer += dt;
+  if (anim->timer >= anim->frame_time) {
+    anim->timer = 0;
+    anim->current_frame++;
+
+    if (anim->current_frame >= anim->frame_count) {
+      if (anim->looping) {
+        anim->current_frame = 0;
+      } else {
+        anim->current_frame = anim->frame_count - 1;
+        anim->finished = true;
+      }
+    }
+    anim->frame_rect.x = anim->current_frame * anim->frame_rect.width;
+  }
+}
+
+static inline void lf_draw_animation(Texture2D tex, LF_Animation anim,
+                                     Vector2 pos, float scale, Color tint) {
+  Rectangle dest = {pos.x, pos.y, anim.frame_rect.width * scale,
+                    anim.frame_rect.height * scale};
+  Vector2 origin = {0, 0};
+  DrawTexturePro(tex, anim.frame_rect, dest, origin, 0.0f, tint);
+}
 #endif
