@@ -215,4 +215,45 @@ static inline bool lf_rand_chance(float p) {
   return lf_rand_float(0.0f, 1.0f) < p;
 }
 
+// ============================================================================
+// ASSET LOADING SHORTCUTS
+// ============================================================================
+
+static inline Texture2D lf_load_texture(const char *path) {
+  Texture2D texture = LoadTexture(path);
+  if (texture.id == 0)
+    LF_ERR("Failed to load texture: %s", path);
+  else
+    LF_LOG("Loaded texture: %s", path);
+
+  return texture;
+}
+
+static inline Font lf_load_font(const char *path) {
+  Font font = LoadFont(path);
+  if (font.texture.id == 0)
+    LF_ERR("Failed to load font: %s", path);
+  else
+    LF_LOG("Loaded font: %s", path);
+  return font;
+}
+
+static inline Sound lf_load_sound(const char *path) {
+  Sound sound = LoadSound(path);
+  if (sound.frameCount == 0)
+    LF_ERR("Failed to load sound: %s", path);
+  else
+    LF_LOG("Loaded sound: %s", path);
+  return sound;
+}
+
+static inline Music lf_load_music(const char *path) {
+  Music music = LoadMusicStream(path);
+  if (music.frameCount == 0)
+    LF_ERR("Failed to load music: %s", path);
+  else
+    LF_LOG("Loaded music: %s", path);
+  return music;
+}
+
 #endif
