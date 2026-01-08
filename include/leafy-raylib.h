@@ -256,4 +256,126 @@ static inline Music lf_load_music(const char *path) {
   return music;
 }
 
+// ============================================================================
+// TILE/GRID HELPERS
+// ============================================================================
+
+typedef struct {
+  int cols;      // Number of columns
+  int rows;      // Number of rows
+  int tile_size; // Size of each tile in pixels
+} LF_Grid;
+
+// Create a grid
+static inline LF_Grid lf_grid(int cols, int rows, int tile_size) {
+  return (LF_Grid){cols, rows, tile_size};
+}
+
+static inline Vector2 lf_grid_to_world(LF_Grid *grid, int col, int row) {
+  return (Vector2){(float)(col * grid->tile_size),
+                   (float)(row * grid->tile_size)};
+}
+
+// Convert world position to grid position
+static inline Vector2 lf_world_to_grid(LF_Grid *grid, Vector2 pos) {
+  return (Vector2){(float)((int)(pos.x / grid->tile_size)),
+                   (float)((int)(pos.y / grid->tile_size))};
+}
+
+static inline Vector2 lf_grid_center(LF_Grid *grid, int col, int row) {
+  float half = grid->tile_size * 0.5f;
+  return (Vector2){(float)(col * grid->tile_size) + half,
+                   (float)(row * grid->tile_size) + half};
+}
+
+static inline bool lf_grid_valid(LF_Grid *grid, int col, int row) {
+  return col >= 0 && col < grid->cols && row >= 0 && row < grid->rows;
+}
+
+static inline Rectangle lf_grid_rect(LF_Grid *grid, int col, int row) {
+  return (Rectangle){(float)(col * grid->tile_size),
+                     (float)(row * grid->tile_size), (float)grid->tile_size,
+                     (float)grid->tile_size};
+}
+
+static inline void lf_draw_tile(LF_Grid *grid, int col, int row, Color color) {
+  Rectangle r = lf_grid_rect(grid, col, row);
+  DrawRectangleRec(r, color);
+}
+
+static inline void lf_draw_tile_tex(LF_Grid *grid, int col, int row,
+                                    Texture2D tex, Rectangle source) {
+  Vector2 pos = lf_grid_to_world(grid, col, row);
+  Rectangle dest = {pos.x, pos.y, (float)grid->tile_size,
+                    (float)grid->tile_size};
+  DrawTexturePro(tex, source, dest, (Vector2){0, 0}, 0.0f, WHITE);
+}
+
+// Simple tilemap structure
+typedef struct {
+  LF_Grid grid;
+  int *tiles; // 1D array of tile IDs (cols * rows)
+} LF_Tilemap;
+
+static inline LF_Tilemap lf_tilemap_create(int cols, int rows, int tile_size) {
+  LF_Tilemap map = {0};
+  map.grid = lf_grid(cols, rows, tile_size);
+  map.tiles = (int *)MemAlloc(cols * rows * sizeof(int));
+  for (int i = 0; i < cols * rows; i++) {
+    map.tiles[i] = 0;
+  }
+  return map;
+}
+
+// Free tilemap memory
+static inline void lf_tilemap_free(LF_Tilemap *map) {
+  if (map->tiles) {
+    MemFree(map->tiles);
+    map->tiles = NULL;
+  }
+}
+
+static inline int lf_tilemap_get(LF_Tilemap *map, int col, int row) {
+  if (!lf_grid_valid(&map->grid, col, row))
+    return -1;
+  return map->tiles[row * map->grid.cols + col];
+}
+
+// Set tile at position
+static inline void lf_tilemap_set(LF_Tilemap *map, int col, int row,
+                                  int tile_id) {
+  if (!lf_grid_valid(&map->grid, col, row))
+    return;
+  map->tiles[row * map->grid.cols + col] = tile_id;
+}
+
+static inline void lf_tilemap_draw(LF_Tilemap *map, Color colors[],
+                                   int color_count) {
+  for (int row = 0; row < map->grid.rows; row++) {
+    for (int col = 0; col < map->grid.cols; col++) {
+      int tile = lf_tilemap_get(map, col, row);
+      if (tile > 0 && tile <= color_count) {
+        lf_draw_tile(&map->grid, col, row, colors[tile - 1]);
+      }
+    }
+  }
+}
+
+static inline void lf_tilemap_draw_tex(LF_Tilemap *map, Texture2D atlas,
+                                       int atlas_cols, int atlas_tile_size) {
+  for (int row = 0; row < map->grid.rows; row++) {
+    for (int col = 0; col < map->grid.cols; col++) {
+      int tile = lf_tilemap_get(map, col, row);
+      if (tile > 0) {
+        int src_col = (tile - 1) % atlas_cols;
+        int src_row = (tile - 1) / atlas_cols;
+        Rectangle source = {(float)(src_col * atlas_tile_size),
+                            (float)(src_row * atlas_tile_size),
+                            (float)atlas_tile_size, (float)atlas_tile_size};
+        lf_draw_tile_tex(&map->grid, col, row, atlas, source);
+      }
+    }
+  }
+}
+
 #endif
