@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-  
+
 #ifndef LEAFY_RAYLIB_H
 #define LEAFY_RAYLIB_H
 
@@ -56,6 +56,11 @@ static inline bool lf_timer_tick(LF_Timer *time, float dt) {
   }
 
   return false;
+}
+
+static inline void lf_timer_reset(LF_Timer *timer) { timer->time = 0.0f; }
+static inline float lf_timer_progress(LF_Timer *timer) {
+  return (timer->limit > 0.0f) ? (timer->time / timer->limit) : 0.0f;
 }
 
 #endif
