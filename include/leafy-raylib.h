@@ -88,4 +88,11 @@ static inline Vector2 lf_rect_center(Rectangle r) {
   return (Vector2){r.x + r.width * 0.5f, r.y + r.height * 0.5f};
 }
 
+static inline Rectangle lf_rect_expand(Rectangle rect, float amount) {
+  rect.x -= amount;
+  rect.y -= amount;
+  rect.width += amount * 2;
+  rect.height += amount * 2;
+  return rect;
+}
 #endif
