@@ -63,4 +63,9 @@ static inline float lf_timer_progress(LF_Timer *timer) {
   return (timer->limit > 0.0f) ? (timer->time / timer->limit) : 0.0f;
 }
 
+// ============================================================================
+// VECTOR2 HELPERS
+// ============================================================================
+static inline Vector2 lf_vect(float x, float y) { return (Vector2){x, y}; };
+
 #endif
