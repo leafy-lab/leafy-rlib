@@ -149,4 +149,27 @@ static inline Vector2 lf_move_vector(LF_Controls *c) {
   return Vector2Normalize(v);
 }
 
+// ============================================================================
+// CAMERA 2D HELPERS
+// ============================================================================
+
+static inline Camera2D lf_camera_follow(Vector2 target, float zoom) {
+  Camera2D cam = {0};
+  cam.target = target;
+  cam.offset = (Vector2){GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f};
+  cam.rotation = 0.0f;
+  cam.zoom = zoom;
+  return cam;
+}
+
+// Smooth camera follow (lerp-based)
+static inline void lf_camera_smooth_follow(Camera2D *cam, Vector2 target,
+                                           float speed, float dt) {
+  cam->target.x += (target.x - cam->target.x) * speed * dt;
+  cam->target.y += (target.y - cam->target.y) * speed * dt;
+}
+
+static inline void lf_camera_begin(Camera2D cam) { BeginMode2D(cam); }
+static inline void lf_camera_end(void) { EndMode2D(); }
+
 #endif
