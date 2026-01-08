@@ -68,4 +68,24 @@ static inline float lf_timer_progress(LF_Timer *timer) {
 // ============================================================================
 static inline Vector2 lf_vect(float x, float y) { return (Vector2){x, y}; };
 
+// ============================================================================
+// RECTANGLE HELPERS
+// ============================================================================
+static inline Rectangle lf_rect(float x, float y, float w, float h) {
+  return (Rectangle){x, y, w, h};
+};
+
+static inline bool lf_rect_overlap(Rectangle a, Rectangle b) {
+  return CheckCollisionRecs(a, b);
+}
+
+static inline bool lf_rect_contains(Rectangle r, Vector2 p) {
+  return CheckCollisionPointRec(p, r);
+}
+
+// Get center of rectangle
+static inline Vector2 lf_rect_center(Rectangle r) {
+  return (Vector2){r.x + r.width * 0.5f, r.y + r.height * 0.5f};
+}
+
 #endif
