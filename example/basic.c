@@ -1,4 +1,4 @@
-#include "../include/leafy-raylib.h"
+#include "../include/leafy_raylib.h"
 #include <raylib.h>
 
 int main(void) {
