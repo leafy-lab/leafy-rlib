@@ -45,7 +45,7 @@ typedef struct {
 } LF_Timer;
 
 static inline LF_Timer lf_timer(float limit) {
-  return (LF_Timer{0.0f, limit});
+  return (LF_Timer){0.0f, limit};
 };
 
 static inline bool lf_timer_tick(LF_Timer *time, float dt) {
